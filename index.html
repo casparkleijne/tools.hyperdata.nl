@@ -1,12 +1,794 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="nl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>tools.hyperdata.nl</title>
+    <title>REST Besliswijzer - tools.hyperdata.nl</title>
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <h1>tools.hyperdata.nl</h1>
-    <p>REST Composer</p>
+    <header>
+        <div class="container">
+            <h1>REST Besliswijzer</h1>
+            <p class="subtitle">HTTP API Design conform MFF BAS &amp; Nederlandse API Strategie</p>
+            <nav>
+                <a href="#method-selector" class="nav-link active" data-tab="method-selector">Method</a>
+                <a href="#decision-tree" class="nav-link" data-tab="decision-tree">Decision Tree</a>
+                <a href="#status-codes" class="nav-link" data-tab="status-codes">Status Codes</a>
+                <a href="#query-params" class="nav-link" data-tab="query-params">Query Parameters</a>
+                <a href="#examples" class="nav-link" data-tab="examples">Voorbeelden</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+
+        <!-- TAB 1: METHOD SELECTOR -->
+        <section id="method-selector" class="tab-content active">
+            <h2>Welke HTTP Method heb je nodig?</h2>
+            <div class="question-card">
+                <p class="question">Wat wil je doen met de resource?</p>
+                <div class="options">
+                    <button class="option-btn" data-method="GET" onclick="showMethod('GET')">
+                        <span class="option-icon">&#128269;</span>
+                        <span class="option-label">Data ophalen</span>
+                    </button>
+                    <button class="option-btn" data-method="HEAD" onclick="showMethod('HEAD')">
+                        <span class="option-icon">&#128196;</span>
+                        <span class="option-label">Alleen headers/metadata</span>
+                    </button>
+                    <button class="option-btn" data-method="POST" onclick="showMethod('POST')">
+                        <span class="option-icon">&#10133;</span>
+                        <span class="option-label">Nieuwe resource aanmaken</span>
+                    </button>
+                    <button class="option-btn" data-method="PUT" onclick="showMethod('PUT')">
+                        <span class="option-icon">&#128260;</span>
+                        <span class="option-label">Resource vervangen</span>
+                    </button>
+                    <button class="option-btn" data-method="PATCH" onclick="showMethod('PATCH')">
+                        <span class="option-icon">&#9998;</span>
+                        <span class="option-label">Resource deels wijzigen</span>
+                    </button>
+                    <button class="option-btn" data-method="DELETE" onclick="showMethod('DELETE')">
+                        <span class="option-icon">&#128465;</span>
+                        <span class="option-label">Resource verwijderen</span>
+                    </button>
+                </div>
+            </div>
+
+            <div id="method-result" class="result-card hidden">
+                <div class="method-header">
+                    <span id="method-badge" class="method-badge"></span>
+                    <span id="method-title" class="method-title"></span>
+                </div>
+                <div id="method-details"></div>
+            </div>
+
+            <!-- METHOD REFERENCE TABLE -->
+            <div class="reference-table">
+                <h3>HTTP Methods Overzicht (RFC 9110 + MFF BAS ID08)</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Method</th>
+                            <th>Gebruik</th>
+                            <th>Body</th>
+                            <th>Idempotent</th>
+                            <th>Safe</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="badge get">GET</span></td>
+                            <td>Data ophalen (read)</td>
+                            <td>Nee</td>
+                            <td>Ja</td>
+                            <td>Ja</td>
+                        </tr>
+                        <tr>
+                            <td><span class="badge head">HEAD</span></td>
+                            <td>Metadata/headers ophalen</td>
+                            <td>Nee</td>
+                            <td>Ja</td>
+                            <td>Ja</td>
+                        </tr>
+                        <tr>
+                            <td><span class="badge post">POST</span></td>
+                            <td>Resource aanmaken (server bepaalt ID)</td>
+                            <td>Ja</td>
+                            <td>Nee</td>
+                            <td>Nee</td>
+                        </tr>
+                        <tr>
+                            <td><span class="badge put">PUT</span></td>
+                            <td>Resource vervangen/aanmaken (client bepaalt ID)</td>
+                            <td>Ja</td>
+                            <td>Ja</td>
+                            <td>Nee</td>
+                        </tr>
+                        <tr>
+                            <td><span class="badge patch">PATCH</span></td>
+                            <td>Resource deels wijzigen</td>
+                            <td>Ja</td>
+                            <td>Nee</td>
+                            <td>Nee</td>
+                        </tr>
+                        <tr>
+                            <td><span class="badge delete">DELETE</span></td>
+                            <td>Resource verwijderen</td>
+                            <td>Nee</td>
+                            <td>Ja</td>
+                            <td>Nee</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- TAB 2: DECISION TREE -->
+        <section id="decision-tree" class="tab-content">
+            <h2>Response Decision Tree</h2>
+            <p class="section-intro">Loop stap voor stap door de beslisboom om de juiste HTTP status code te bepalen.</p>
+
+            <div id="tree-container">
+                <div id="tree-step" class="tree-step">
+                    <!-- Dynamically rendered -->
+                </div>
+                <div id="tree-result" class="tree-result hidden"></div>
+                <div id="tree-history" class="tree-history"></div>
+            </div>
+            <button id="tree-reset" class="btn-reset hidden" onclick="resetTree()">Opnieuw beginnen</button>
+
+            <!-- STATIC DECISION TREE OVERVIEW -->
+            <div class="decision-overview">
+                <h3>Beslisboom Overzicht</h3>
+                <ol class="tree-list">
+                    <li>
+                        <strong>Heeft de gebruiker een geldig token?</strong>
+                        <span class="tree-no">Nee &rarr; 401 Unauthorized</span>
+                    </li>
+                    <li>
+                        <strong>Heeft de gebruiker recht op deze actie?</strong>
+                        <span class="tree-no">Nee &rarr; 403 Forbidden</span>
+                    </li>
+                    <li>
+                        <strong>Is de body of query syntactisch correct?</strong>
+                        <span class="tree-no">Nee &rarr; 400 Bad Request</span>
+                        <span class="tree-warn">Path fouten zijn ALTIJD 404, niet 400</span>
+                    </li>
+                    <li>
+                        <strong>Is de body semantisch correct? (POST/PUT/PATCH)</strong>
+                        <span class="tree-no">Nee &rarr; 422 Unprocessable Entity</span>
+                        <span class="tree-warn">GET, HEAD en DELETE hebben geen body, dus geen 422</span>
+                    </li>
+                    <li>
+                        <strong>Bestaat de resource?</strong>
+                        <span class="tree-no">Nee &rarr; 404 Not Found</span>
+                    </li>
+                    <li>
+                        <strong>Werkt het onderliggende systeem correct?</strong>
+                        <span class="tree-no">Nee &rarr; 500 Internal Server Error</span>
+                        <span class="tree-warn">Altijd x-correlation-id meegeven</span>
+                    </li>
+                    <li>
+                        <strong>Wordt er caching gebruikt? (GET/HEAD)</strong>
+                        <span class="tree-no">Ja, ongewijzigd &rarr; 304 Not Modified</span>
+                    </li>
+                    <li>
+                        <strong>Wordt er paging gebruikt? (GET collecties)</strong>
+                        <span class="tree-no">Ja &rarr; 206 Partial Content</span>
+                    </li>
+                    <li>
+                        <strong>Success!</strong>
+                        <span class="tree-yes">200 / 201 / 204 afhankelijk van method</span>
+                    </li>
+                </ol>
+            </div>
+        </section>
+
+        <!-- TAB 3: STATUS CODES -->
+        <section id="status-codes" class="tab-content">
+            <h2>HTTP Status Codes (MFF BAS ID10)</h2>
+            <p class="section-intro">Minimale set van HTTP status codes per REST operatie conform MFF BAS ontwerprichtlijnen.</p>
+
+            <div class="status-matrix">
+                <h3>Status Code Matrix per Operatie</h3>
+                <div class="matrix-scroll">
+                    <table class="matrix-table">
+                        <thead>
+                            <tr>
+                                <th>REST operatie</th>
+                                <th>200</th>
+                                <th>201</th>
+                                <th>204</th>
+                                <th>400</th>
+                                <th>401</th>
+                                <th>403</th>
+                                <th>404</th>
+                                <th>422</th>
+                                <th>500</th>
+                                <th>503</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="badge get">GET</span> collectie</td>
+                                <td class="y">&#10003;</td><td></td><td></td>
+                                <td class="y">&#10003;</td><td class="y">&#10003;</td><td class="y">&#10003;</td>
+                                <td></td><td class="y">&#10003;</td><td class="y">&#10003;</td><td class="y">&#10003;</td>
+                            </tr>
+                            <tr>
+                                <td><span class="badge get">GET</span> singleton</td>
+                                <td class="y">&#10003;</td><td></td><td></td>
+                                <td class="y">&#10003;</td><td class="y">&#10003;</td><td class="y">&#10003;</td>
+                                <td class="y">&#10003;</td><td></td><td class="y">&#10003;</td><td class="y">&#10003;</td>
+                            </tr>
+                            <tr>
+                                <td><span class="badge put">PUT</span> create</td>
+                                <td></td><td class="y">&#10003;</td><td class="o">opt</td>
+                                <td class="y">&#10003;</td><td class="y">&#10003;</td><td class="y">&#10003;</td>
+                                <td></td><td class="y">&#10003;</td><td class="y">&#10003;</td><td class="y">&#10003;</td>
+                            </tr>
+                            <tr>
+                                <td><span class="badge put">PUT</span> update</td>
+                                <td class="y">&#10003;</td><td></td><td class="o">opt</td>
+                                <td class="y">&#10003;</td><td class="y">&#10003;</td><td class="y">&#10003;</td>
+                                <td class="y">&#10003;</td><td class="y">&#10003;</td><td class="y">&#10003;</td><td class="y">&#10003;</td>
+                            </tr>
+                            <tr>
+                                <td><span class="badge patch">PATCH</span></td>
+                                <td class="y">&#10003;</td><td></td><td class="o">opt</td>
+                                <td class="y">&#10003;</td><td class="y">&#10003;</td><td class="y">&#10003;</td>
+                                <td class="y">&#10003;</td><td class="y">&#10003;</td><td class="y">&#10003;</td><td class="y">&#10003;</td>
+                            </tr>
+                            <tr>
+                                <td><span class="badge delete">DELETE</span></td>
+                                <td class="o">opt</td><td></td><td class="y">&#10003;</td>
+                                <td class="y">&#10003;</td><td class="y">&#10003;</td><td class="y">&#10003;</td>
+                                <td class="y">&#10003;</td><td></td><td class="y">&#10003;</td><td class="y">&#10003;</td>
+                            </tr>
+                            <tr>
+                                <td><span class="badge post">POST</span> create</td>
+                                <td></td><td class="y">&#10003;</td><td></td>
+                                <td class="y">&#10003;</td><td class="y">&#10003;</td><td class="y">&#10003;</td>
+                                <td></td><td class="y">&#10003;</td><td class="y">&#10003;</td><td class="y">&#10003;</td>
+                            </tr>
+                            <tr>
+                                <td><span class="badge post">POST</span> search</td>
+                                <td class="y">&#10003;</td><td></td><td></td>
+                                <td class="y">&#10003;</td><td class="y">&#10003;</td><td class="y">&#10003;</td>
+                                <td class="y">&#10003;</td><td class="y">&#10003;</td><td class="y">&#10003;</td><td class="y">&#10003;</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p class="matrix-legend"><strong>opt</strong> = optioneel, afhankelijk van use case</p>
+            </div>
+
+            <!-- STATUS CODE DETAIL CARDS -->
+            <div class="status-groups">
+                <div class="status-group success">
+                    <h3>2xx Success</h3>
+                    <div class="status-card" onclick="toggleCard(this)">
+                        <div class="status-header"><span class="code">200</span> OK</div>
+                        <div class="status-body">Resource geretourneerd. Lege collectie is ook 200: <code>{ "data": [], "total": 0 }</code></div>
+                    </div>
+                    <div class="status-card" onclick="toggleCard(this)">
+                        <div class="status-header"><span class="code">201</span> Created</div>
+                        <div class="status-body">Resource aangemaakt. <strong>Location</strong> header bevat URI van nieuwe resource.</div>
+                    </div>
+                    <div class="status-card" onclick="toggleCard(this)">
+                        <div class="status-header"><span class="code">202</span> Accepted</div>
+                        <div class="status-body">Asynchrone verwerking gestart (bijv. bulk-delete). Geen directe response body.</div>
+                    </div>
+                    <div class="status-card" onclick="toggleCard(this)">
+                        <div class="status-header"><span class="code">204</span> No Content</div>
+                        <div class="status-body">Success zonder body. Gebruikt bij DELETE, of PUT/PATCH zonder return data.</div>
+                    </div>
+                    <div class="status-card" onclick="toggleCard(this)">
+                        <div class="status-header"><span class="code">206</span> Partial Content</div>
+                        <div class="status-body">Gedeeltelijke data bij paging (<code>_limit</code>/<code>_offset</code>).</div>
+                    </div>
+                </div>
+
+                <div class="status-group redirect">
+                    <h3>3xx Redirect</h3>
+                    <div class="status-card" onclick="toggleCard(this)">
+                        <div class="status-header"><span class="code">304</span> Not Modified</div>
+                        <div class="status-body">Resource ongewijzigd (caching). Alleen voor GET/HEAD met <code>ETag</code>/<code>If-None-Match</code>.</div>
+                    </div>
+                </div>
+
+                <div class="status-group client-error">
+                    <h3>4xx Client Error</h3>
+                    <div class="status-card" onclick="toggleCard(this)">
+                        <div class="status-header"><span class="code">400</span> Bad Request</div>
+                        <div class="status-body">Syntactische fout in body of query parameters. <strong>Niet</strong> voor path fouten (dat is 404).</div>
+                    </div>
+                    <div class="status-card" onclick="toggleCard(this)">
+                        <div class="status-header"><span class="code">401</span> Unauthorized</div>
+                        <div class="status-body">Authenticatie vereist of token ongeldig/verlopen.</div>
+                    </div>
+                    <div class="status-card" onclick="toggleCard(this)">
+                        <div class="status-header"><span class="code">403</span> Forbidden</div>
+                        <div class="status-body">Geen recht op deze actie. Gebruiker is geauthenticeerd maar niet geautoriseerd.</div>
+                    </div>
+                    <div class="status-card" onclick="toggleCard(this)">
+                        <div class="status-header"><span class="code">404</span> Not Found</div>
+                        <div class="status-body">Resource bestaat niet of path is ongeldig. Altijd bij path fouten.</div>
+                    </div>
+                    <div class="status-card" onclick="toggleCard(this)">
+                        <div class="status-header"><span class="code">409</span> Conflict</div>
+                        <div class="status-body">Duplicate key of concurrent update conflict.</div>
+                    </div>
+                    <div class="status-card" onclick="toggleCard(this)">
+                        <div class="status-header"><span class="code">422</span> Unprocessable Entity</div>
+                        <div class="status-body">Semantische validatiefout in body. <strong>Alleen</strong> bij POST/PUT/PATCH (methods met body).</div>
+                    </div>
+                </div>
+
+                <div class="status-group server-error">
+                    <h3>5xx Server Error</h3>
+                    <div class="status-card" onclick="toggleCard(this)">
+                        <div class="status-header"><span class="code">500</span> Internal Server Error</div>
+                        <div class="status-body">Systeemfout. <strong>x-correlation-id</strong> is verplicht voor tracing.</div>
+                    </div>
+                    <div class="status-card" onclick="toggleCard(this)">
+                        <div class="status-header"><span class="code">503</span> Service Unavailable</div>
+                        <div class="status-body">Service tijdelijk niet beschikbaar. Gebruik <code>Retry-After</code> header.</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ERROR RESPONSE FORMAT -->
+            <div class="reference-table">
+                <h3>Foutmelding Formaat (RFC 7807 - MFF BAS ID05)</h3>
+                <pre class="code-block">{
+  "type": "https://datatracker.ietf.org/doc/html/rfc7231#section-6.5.3",
+  "title": "Forbidden",
+  "status": 403,
+  "detail": "Gebruiker heeft geen toegang tot deze resource",
+  "instance": "/api/v1/users/123"
+}</pre>
+                <p class="note">Verplichte velden: <code>type</code>, <code>title</code>, <code>status</code>. Optioneel: <code>detail</code>, <code>instance</code>.</p>
+            </div>
+        </section>
+
+        <!-- TAB 4: QUERY PARAMETERS -->
+        <section id="query-params" class="tab-content">
+            <h2>Query Parameters (MFF BAS)</h2>
+            <p class="section-intro">Geen OData. Gebruik underscore-prefixed parameters conform MFF BAS richtlijnen.</p>
+
+            <div class="param-grid">
+                <div class="param-card">
+                    <h3>Paging</h3>
+                    <p class="param-rule">MFF BAS: response = <strong>206 Partial Content</strong></p>
+                    <div class="param-examples">
+                        <div class="param-example">
+                            <code>?_limit=20</code>
+                            <span>Aantal records per pagina</span>
+                        </div>
+                        <div class="param-example">
+                            <code>?_offset=40</code>
+                            <span>Records overslaan</span>
+                        </div>
+                        <div class="param-example">
+                            <code>?_limit=20&amp;_offset=40</code>
+                            <span>Pagina 3 (records 41-60)</span>
+                        </div>
+                    </div>
+                    <pre class="code-block">GET /api/v1/users?_limit=20&amp;_offset=40
+
+HTTP/1.1 206 Partial Content
+x-correlation-id: 550e8400-e29b-41d4-a716-446655440000
+
+{
+  "data": [...],
+  "total": 150
+}</pre>
+                </div>
+
+                <div class="param-card">
+                    <h3>Sorteren (MFF BAS ID03)</h3>
+                    <p class="param-rule">Gebruik <code>_sort</code> met underscore prefix</p>
+                    <div class="param-examples">
+                        <div class="param-example">
+                            <code>?_sort=name</code>
+                            <span>Ascending (standaard)</span>
+                        </div>
+                        <div class="param-example">
+                            <code>?_sort=-created_at</code>
+                            <span>Descending (- prefix)</span>
+                        </div>
+                        <div class="param-example">
+                            <code>?_sort=status,-date</code>
+                            <span>Meerdere velden</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="param-card">
+                    <h3>Zoeken (MFF BAS ID04)</h3>
+                    <p class="param-rule">Gebruik <code>_search</code> voor full-text zoeken</p>
+                    <div class="param-examples">
+                        <div class="param-example">
+                            <code>?_search=jan</code>
+                            <span>Full-text zoeken</span>
+                        </div>
+                        <div class="param-example">
+                            <code>?status=active</code>
+                            <span>Filter op specifiek veld</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="param-card">
+                    <h3>Expanderen (MFF BAS ID18)</h3>
+                    <p class="param-rule">Gelinkte resources mee laden (eager loading)</p>
+                    <div class="param-examples">
+                        <div class="param-example">
+                            <code>?_expand=address</code>
+                            <span>Adres object meeladen</span>
+                        </div>
+                        <div class="param-example">
+                            <code>?_fields=name,email</code>
+                            <span>Representatie op maat (ID19)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- HEADERS -->
+            <div class="reference-table">
+                <h3>Verplichte HTTP Headers (MFF BAS ID20)</h3>
+                <table>
+                    <thead>
+                        <tr><th>Header</th><th>Type</th><th>Beschrijving</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>x-correlation-id</code></td>
+                            <td>Request &amp; Response</td>
+                            <td>UUID voor tracing van transacties</td>
+                        </tr>
+                        <tr>
+                            <td><code>x-request-id</code></td>
+                            <td>Request</td>
+                            <td>Unieke identificatie van het request</td>
+                        </tr>
+                        <tr>
+                            <td><code>x-sender-id</code></td>
+                            <td>Request</td>
+                            <td>EAN13 van de aanroepende marktpartij</td>
+                        </tr>
+                        <tr>
+                            <td><code>x-role</code></td>
+                            <td>Request</td>
+                            <td>Rol van de marktpartij</td>
+                        </tr>
+                        <tr>
+                            <td><code>x-object-id</code></td>
+                            <td>Response</td>
+                            <td>Alternatief voor Location header</td>
+                        </tr>
+                        <tr>
+                            <td><code>Location</code></td>
+                            <td>Response</td>
+                            <td>URI van nieuwe resource (bij 201)</td>
+                        </tr>
+                        <tr>
+                            <td><code>ETag</code></td>
+                            <td>Response</td>
+                            <td>Versie-identifier voor caching</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- TAB 5: EXAMPLES -->
+        <section id="examples" class="tab-content">
+            <h2>Request/Response Voorbeelden</h2>
+            <p class="section-intro">Concrete voorbeelden conform MFF BAS en Nederlandse API Strategie.</p>
+
+            <div class="example-selector">
+                <button class="example-btn active" onclick="showExample('ex-get-single')">GET singleton</button>
+                <button class="example-btn" onclick="showExample('ex-get-collection')">GET collectie</button>
+                <button class="example-btn" onclick="showExample('ex-post-create')">POST create</button>
+                <button class="example-btn" onclick="showExample('ex-put')">PUT replace</button>
+                <button class="example-btn" onclick="showExample('ex-patch')">PATCH update</button>
+                <button class="example-btn" onclick="showExample('ex-delete')">DELETE</button>
+                <button class="example-btn" onclick="showExample('ex-bulk-delete')">POST bulk-delete</button>
+                <button class="example-btn" onclick="showExample('ex-error')">Error response</button>
+            </div>
+
+            <div id="ex-get-single" class="example-content active">
+                <h3><span class="badge get">GET</span> Enkele resource ophalen</h3>
+                <div class="example-pair">
+                    <div class="example-request">
+                        <h4>Request</h4>
+                        <pre class="code-block">GET /api/v1/connections/871688520000000012 HTTP/1.1
+Host: api.example.nl
+Authorization: Bearer eyJhbGciOiJSUzI1NiIs...
+x-correlation-id: 550e8400-e29b-41d4-a716-446655440000
+x-request-id: 7c9e6679-7425-40de-944b-e07fc1f90ae7
+x-sender-id: 8716885000000
+x-role: LV
+Accept: application/json</pre>
+                    </div>
+                    <div class="example-response">
+                        <h4>Response - 200 OK</h4>
+                        <pre class="code-block">HTTP/1.1 200 OK
+Content-Type: application/json
+x-correlation-id: 550e8400-e29b-41d4-a716-446655440000
+ETag: "33a64df551425fcc55e4d42a148795d9f25f89d4"
+
+{
+  "ean": "871688520000000012",
+  "connectionType": "SMALL",
+  "address": {
+    "streetName": "Barchman Wuytierslaan",
+    "houseNumber": 6,
+    "postalCode": "3818LH",
+    "city": "Amersfoort"
+  },
+  "_links": {
+    "self": {
+      "href": "/api/v1/connections/871688520000000012"
+    },
+    "meters": {
+      "href": "/api/v1/connections/871688520000000012/meters"
+    }
+  }
+}</pre>
+                    </div>
+                </div>
+            </div>
+
+            <div id="ex-get-collection" class="example-content">
+                <h3><span class="badge get">GET</span> Collectie met paging en sortering</h3>
+                <div class="example-pair">
+                    <div class="example-request">
+                        <h4>Request</h4>
+                        <pre class="code-block">GET /api/v1/connections?_limit=20&amp;_offset=0&amp;_sort=-createdAt&amp;connectionType=SMALL HTTP/1.1
+Host: api.example.nl
+Authorization: Bearer eyJhbGciOiJSUzI1NiIs...
+x-correlation-id: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+Accept: application/json</pre>
+                    </div>
+                    <div class="example-response">
+                        <h4>Response - 206 Partial Content</h4>
+                        <pre class="code-block">HTTP/1.1 206 Partial Content
+Content-Type: application/json
+x-correlation-id: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+
+{
+  "data": [
+    {
+      "ean": "871688520000000012",
+      "connectionType": "SMALL",
+      "_links": {
+        "self": {
+          "href": "/api/v1/connections/871688520000000012"
+        }
+      }
+    }
+  ],
+  "total": 1542
+}</pre>
+                    </div>
+                </div>
+            </div>
+
+            <div id="ex-post-create" class="example-content">
+                <h3><span class="badge post">POST</span> Nieuwe resource aanmaken</h3>
+                <div class="example-pair">
+                    <div class="example-request">
+                        <h4>Request</h4>
+                        <pre class="code-block">POST /api/v1/connections HTTP/1.1
+Host: api.example.nl
+Authorization: Bearer eyJhbGciOiJSUzI1NiIs...
+x-correlation-id: b2c3d4e5-f6a7-8901-bcde-f12345678901
+Content-Type: application/json
+
+{
+  "connectionType": "SMALL",
+  "address": {
+    "streetName": "Stationsplein",
+    "houseNumber": 1,
+    "postalCode": "3818LE",
+    "city": "Amersfoort"
+  }
+}</pre>
+                    </div>
+                    <div class="example-response">
+                        <h4>Response - 201 Created</h4>
+                        <pre class="code-block">HTTP/1.1 201 Created
+Content-Type: application/json
+Location: /api/v1/connections/871688520000000099
+x-correlation-id: b2c3d4e5-f6a7-8901-bcde-f12345678901
+x-object-id: 871688520000000099
+
+{
+  "ean": "871688520000000099",
+  "connectionType": "SMALL",
+  "address": {
+    "streetName": "Stationsplein",
+    "houseNumber": 1,
+    "postalCode": "3818LE",
+    "city": "Amersfoort"
+  }
+}</pre>
+                    </div>
+                </div>
+            </div>
+
+            <div id="ex-put" class="example-content">
+                <h3><span class="badge put">PUT</span> Resource vervangen</h3>
+                <div class="example-pair">
+                    <div class="example-request">
+                        <h4>Request</h4>
+                        <pre class="code-block">PUT /api/v1/connections/871688520000000012 HTTP/1.1
+Host: api.example.nl
+Authorization: Bearer eyJhbGciOiJSUzI1NiIs...
+x-correlation-id: c3d4e5f6-a7b8-9012-cdef-123456789012
+Content-Type: application/json
+
+{
+  "connectionType": "LARGE",
+  "address": {
+    "streetName": "Barchman Wuytierslaan",
+    "houseNumber": 6,
+    "postalCode": "3818LH",
+    "city": "Amersfoort"
+  }
+}</pre>
+                    </div>
+                    <div class="example-response">
+                        <h4>Response - 200 OK</h4>
+                        <pre class="code-block">HTTP/1.1 200 OK
+Content-Type: application/json
+x-correlation-id: c3d4e5f6-a7b8-9012-cdef-123456789012
+
+{
+  "ean": "871688520000000012",
+  "connectionType": "LARGE",
+  "address": {
+    "streetName": "Barchman Wuytierslaan",
+    "houseNumber": 6,
+    "postalCode": "3818LH",
+    "city": "Amersfoort"
+  }
+}</pre>
+                    </div>
+                </div>
+            </div>
+
+            <div id="ex-patch" class="example-content">
+                <h3><span class="badge patch">PATCH</span> Resource deels wijzigen</h3>
+                <div class="example-pair">
+                    <div class="example-request">
+                        <h4>Request</h4>
+                        <pre class="code-block">PATCH /api/v1/connections/871688520000000012 HTTP/1.1
+Host: api.example.nl
+Authorization: Bearer eyJhbGciOiJSUzI1NiIs...
+x-correlation-id: d4e5f6a7-b8c9-0123-defa-234567890123
+Content-Type: application/json
+
+{
+  "connectionType": "LARGE"
+}</pre>
+                    </div>
+                    <div class="example-response">
+                        <h4>Response - 200 OK</h4>
+                        <pre class="code-block">HTTP/1.1 200 OK
+Content-Type: application/json
+x-correlation-id: d4e5f6a7-b8c9-0123-defa-234567890123
+
+{
+  "ean": "871688520000000012",
+  "connectionType": "LARGE",
+  "address": {
+    "streetName": "Barchman Wuytierslaan",
+    "houseNumber": 6,
+    "postalCode": "3818LH",
+    "city": "Amersfoort"
+  }
+}</pre>
+                    </div>
+                </div>
+            </div>
+
+            <div id="ex-delete" class="example-content">
+                <h3><span class="badge delete">DELETE</span> Resource verwijderen</h3>
+                <div class="example-pair">
+                    <div class="example-request">
+                        <h4>Request</h4>
+                        <pre class="code-block">DELETE /api/v1/connections/871688520000000012 HTTP/1.1
+Host: api.example.nl
+Authorization: Bearer eyJhbGciOiJSUzI1NiIs...
+x-correlation-id: e5f6a7b8-c9d0-1234-efab-345678901234</pre>
+                    </div>
+                    <div class="example-response">
+                        <h4>Response - 204 No Content</h4>
+                        <pre class="code-block">HTTP/1.1 204 No Content
+x-correlation-id: e5f6a7b8-c9d0-1234-efab-345678901234</pre>
+                    </div>
+                </div>
+            </div>
+
+            <div id="ex-bulk-delete" class="example-content">
+                <h3><span class="badge post">POST</span> Bulk delete (async)</h3>
+                <div class="example-pair">
+                    <div class="example-request">
+                        <h4>Request</h4>
+                        <pre class="code-block">POST /api/v1/connections/bulk-delete HTTP/1.1
+Host: api.example.nl
+Authorization: Bearer eyJhbGciOiJSUzI1NiIs...
+x-correlation-id: f6a7b8c9-d0e1-2345-fabc-456789012345
+Content-Type: application/json
+
+{
+  "ids": [
+    "871688520000000012",
+    "871688520000000034",
+    "871688520000000056"
+  ]
+}</pre>
+                    </div>
+                    <div class="example-response">
+                        <h4>Response - 202 Accepted</h4>
+                        <pre class="code-block">HTTP/1.1 202 Accepted
+x-correlation-id: f6a7b8c9-d0e1-2345-fabc-456789012345
+Location: /api/v1/tasks/bulk-del-78901</pre>
+                    </div>
+                </div>
+            </div>
+
+            <div id="ex-error" class="example-content">
+                <h3>Error Response (RFC 7807 - MFF BAS ID05)</h3>
+                <div class="example-pair">
+                    <div class="example-request">
+                        <h4>Request (ongeldige body)</h4>
+                        <pre class="code-block">POST /api/v1/connections HTTP/1.1
+Host: api.example.nl
+Authorization: Bearer eyJhbGciOiJSUzI1NiIs...
+x-correlation-id: a7b8c9d0-e1f2-3456-abcd-567890123456
+Content-Type: application/json
+
+{
+  "connectionType": "UNKNOWN_TYPE"
+}</pre>
+                    </div>
+                    <div class="example-response">
+                        <h4>Response - 422 Unprocessable Entity</h4>
+                        <pre class="code-block">HTTP/1.1 422 Unprocessable Entity
+Content-Type: application/problem+json
+x-correlation-id: a7b8c9d0-e1f2-3456-abcd-567890123456
+
+{
+  "type": "https://api.example.nl/errors/invalid-connection-type",
+  "title": "Invalid connection type",
+  "status": 422,
+  "detail": "Value 'UNKNOWN_TYPE' is not a valid connectionType. Allowed values: SMALL, LARGE",
+  "instance": "/api/v1/connections"
+}</pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>REST Besliswijzer &mdash; Gebaseerd op <strong>MFF BAS API Ontwerprichtlijnen v5.0</strong>, <strong>Nederlandse API Strategie (ASNO)</strong> en <strong>RFC 9110</strong></p>
+            <p class="footer-links">
+                <a href="https://github.com/casparkleijne/tools.hyperdata.nl">GitHub</a>
+            </p>
+        </div>
+    </footer>
+
+    <script src="js/app.js"></script>
 </body>
 </html>
