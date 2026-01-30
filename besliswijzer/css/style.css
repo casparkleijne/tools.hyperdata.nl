@@ -874,6 +874,96 @@ footer strong { color: var(--text); }
 .tree-result.server-error .result-code { color: var(--red); }
 
 /* ==========================================================================
+   FLOWCHART
+   ========================================================================== */
+
+.flowchart-container {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    box-shadow: var(--shadow);
+    overflow-x: auto;
+}
+
+.flowchart-svg {
+    width: 100%;
+    max-width: 900px;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+}
+
+.fc-line {
+    stroke: var(--border);
+    stroke-width: 2;
+}
+
+.fc-label {
+    font-family: var(--font-sans);
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.fc-label-yes { fill: var(--green); }
+.fc-label-no { fill: var(--red); }
+
+.fc-decision rect {
+    fill: var(--surface-2);
+    stroke: var(--border);
+    stroke-width: 2;
+}
+
+.fc-decision text {
+    fill: var(--text);
+    font-family: var(--font-sans);
+    font-size: 13px;
+    font-weight: 600;
+    text-anchor: middle;
+    dominant-baseline: middle;
+}
+
+.fc-result rect {
+    stroke-width: 2;
+}
+
+.fc-result text {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 700;
+    text-anchor: middle;
+    dominant-baseline: middle;
+}
+
+.fc-client-error rect { fill: var(--orange-bg); stroke: var(--orange); }
+.fc-client-error text { fill: var(--orange); }
+
+.fc-server-error rect { fill: var(--red-bg); stroke: var(--red); }
+.fc-server-error text { fill: var(--red); }
+
+.fc-redirect rect { fill: var(--blue-bg); stroke: var(--accent); }
+.fc-redirect text { fill: var(--accent); }
+
+.fc-success rect { fill: var(--green-bg); stroke: var(--green); }
+.fc-success text { fill: var(--green); }
+
+.fc-final rect {
+    stroke-width: 3;
+}
+
+.fc-final-title {
+    font-family: var(--font-sans);
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.fc-final-detail {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+}
+
+/* ==========================================================================
    RESPONSIVE
    ========================================================================== */
 
