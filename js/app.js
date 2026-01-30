@@ -2,6 +2,33 @@
 // REST Besliswijzer - Interactive Application
 // =============================================================================
 
+// -- THEME TOGGLE --
+(function () {
+    const saved = localStorage.getItem('theme');
+    if (saved) {
+        document.documentElement.setAttribute('data-theme', saved);
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.documentElement.setAttribute('data-theme', 'dark');
+    }
+    updateToggleUI();
+})();
+
+function toggleTheme() {
+    const current = document.documentElement.getAttribute('data-theme');
+    const next = current === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+    updateToggleUI();
+}
+
+function updateToggleUI() {
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    const icon = document.querySelector('.theme-icon');
+    const label = document.querySelector('.theme-label');
+    if (icon) icon.innerHTML = isDark ? '&#9788;' : '&#9790;';
+    if (label) label.textContent = isDark ? 'Light' : 'Dark';
+}
+
 // -- TAB NAVIGATION --
 document.querySelectorAll('.nav-link').forEach(link => {
     link.addEventListener('click', e => {

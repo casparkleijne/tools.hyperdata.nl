@@ -9,8 +9,16 @@
 <body>
     <header>
         <div class="container">
-            <h1>REST Besliswijzer</h1>
-            <p class="subtitle">HTTP API Design conform MFF BAS &amp; Nederlandse API Strategie</p>
+            <div class="header-top">
+                <div>
+                    <h1>REST Besliswijzer</h1>
+                    <p class="subtitle">HTTP API Design conform MFF BAS &amp; Nederlandse API Strategie</p>
+                </div>
+                <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">
+                    <span class="theme-icon">&#9790;</span>
+                    <span class="theme-label">Dark</span>
+                </button>
+            </div>
             <nav>
                 <a href="#method-selector" class="nav-link active" data-tab="method-selector">Method</a>
                 <a href="#decision-tree" class="nav-link" data-tab="decision-tree">Decision Tree</a>
