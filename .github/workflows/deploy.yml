@@ -20,4 +20,5 @@ jobs:
           key: ${{ secrets.SITEGROUND_SSH_KEY }}
           port: 18765
           script: |
-            ls -la www/tools.hyperdata.nl/
+            cd ${{ secrets.SITEGROUND_REMOTE_PATH }}
+            git pull origin main
