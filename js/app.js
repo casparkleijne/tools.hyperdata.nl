@@ -25,7 +25,7 @@ function updateToggleUI() {
     const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
     const icon = document.querySelector('.theme-icon');
     const label = document.querySelector('.theme-label');
-    if (icon) icon.innerHTML = isDark ? '&#9788;' : '&#9790;';
+    if (icon) icon.textContent = isDark ? 'light_mode' : 'dark_mode';
     if (label) label.textContent = isDark ? 'Light' : 'Dark';
 }
 
