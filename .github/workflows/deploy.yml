@@ -20,4 +20,4 @@ jobs:
           key: ${{ secrets.SITEGROUND_SSH_KEY }}
           port: 18765
           script: |
-            ls -la www/
+            ls -la www/tools.hyperdata.nl/
