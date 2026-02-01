@@ -22,3 +22,4 @@ jobs:
           script: |
             cd ${{ secrets.SITEGROUND_REMOTE_PATH }}
             git pull origin main
+            sg-cache purge 
