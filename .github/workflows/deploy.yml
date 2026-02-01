@@ -22,4 +22,4 @@ jobs:
           script: |
             cd ${{ secrets.SITEGROUND_REMOTE_PATH }}
             git pull origin main
-            which sg-cache || find /usr -name 'sg-cache' 2>/dev/null || echo "sg-cache not found"
+            rm -rf /home/customer/.opcache/* || true
