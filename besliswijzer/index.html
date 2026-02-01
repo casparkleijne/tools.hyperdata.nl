@@ -25,6 +25,7 @@
                 <a href="#status-codes" class="nav-link" data-tab="status-codes">Status Codes</a>
                 <a href="#query-params" class="nav-link" data-tab="query-params">Query Parameters</a>
                 <a href="#flowchart" class="nav-link" data-tab="flowchart">Flowchart</a>
+                <a href="#richtlijnen" class="nav-link" data-tab="richtlijnen">Richtlijnen</a>
                 <a href="#examples" class="nav-link" data-tab="examples">Voorbeelden</a>
             </nav>
         </div>
@@ -633,6 +634,668 @@ x-correlation-id: 550e8400-e29b-41d4-a716-446655440000
                         <text x="280" y="790" class="fc-final-detail">POST create: 201 Created | DELETE: 204 No Content</text>
                     </g>
                 </svg>
+            </div>
+        </section>
+
+        <!-- TAB: RICHTLIJNEN -->
+        <section id="richtlijnen" class="tab-content">
+            <h2>MFF BAS API Ontwerprichtlijnen v5.0</h2>
+            <p class="section-intro">Alle 25 energiesector-specifieke richtlijnen voor het ontwerpen van REST API's. Vastgesteld op 22 januari 2025.</p>
+
+            <div class="richtlijnen-section">
+                <h3>Standaarden voor API ontwerp</h3>
+
+                <div class="richtlijn-card">
+                    <div class="richtlijn-header" onclick="toggleCard(this.parentElement)">
+                        <span class="richtlijn-id">ID 01</span>
+                        <span class="richtlijn-title">API strategie voor de Nederlandse overheid</span>
+                    </div>
+                    <div class="richtlijn-body">
+                        <dl>
+                            <dt>Strategie</dt>
+                            <dd>Bij het ontwerpen en ontwikkelen van API's is de <em>API strategie voor de Nederlandse overheid</em> (ASNO) richtinggevend.</dd>
+                            <dt>Toelichting</dt>
+                            <dd>Deze API strategie is door de MFF bestempeld als algemeen uitgangspunt. Energiesector specifieke ontwerprichtlijnen zijn aanvullend opgenomen.</dd>
+                            <dt>Afwijking</dt>
+                            <dd>Niet alle service interacties zijn geschikt voor een REST-API. Overweeg of REST geschikt is voor het specifieke doel.</dd>
+                        </dl>
+                    </div>
+                </div>
+
+                <div class="richtlijn-card">
+                    <div class="richtlijn-header" onclick="toggleCard(this.parentElement)">
+                        <span class="richtlijn-id">ID 02</span>
+                        <span class="richtlijn-title">Gestandaardiseerde informatie modellen</span>
+                    </div>
+                    <div class="richtlijn-body">
+                        <dl>
+                            <dt>Strategie</dt>
+                            <dd>Gestandaardiseerde informatie modellen zoals IEC CIM, ebIX UML Model en ebIX EFET ENTSO-E Role Model zijn leidend voor naamgeving van resources en attributen.</dd>
+                            <dt>Modellen</dt>
+                            <dd>
+                                <ul>
+                                    <li>IEC Common Information Model (CIM)</li>
+                                    <li>ebIX UML Model for the European Energy Market</li>
+                                    <li>OASIS Universal Business Language (UBL)</li>
+                                    <li>CMF Markt Model</li>
+                                    <li>ebIX EFET ENTSO-E Harmonised Electricity Market Role Model</li>
+                                    <li>NEN 5825 standaard voor adresnotatie</li>
+                                    <li>BAG (Basisregistratie Adressen en Gebouwen)</li>
+                                </ul>
+                            </dd>
+                            <dt>Afwijking</dt>
+                            <dd>Eigen uitbreidingen van bestaande modellen hebben de voorkeur boven zelf verzinnen.</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+
+            <div class="richtlijnen-section">
+                <h3>Energiesector specifieke richtlijnen</h3>
+
+                <div class="richtlijn-card">
+                    <div class="richtlijn-header" onclick="toggleCard(this.parentElement)">
+                        <span class="richtlijn-id">ID 01</span>
+                        <span class="richtlijn-title">Definitie van het koppelvlak</span>
+                        <span class="richtlijn-tag">Taal</span>
+                    </div>
+                    <div class="richtlijn-body">
+                        <dl>
+                            <dt>Strategie</dt>
+                            <dd>Definitie van het koppelvlak (de API) in het <strong>UK-Engels</strong>.</dd>
+                            <dt>Toelichting</dt>
+                            <dd>Documentatie (zoals <code>description</code> en <code>example</code>) in het Engels. Resources en attributen in het Engels.</dd>
+                            <dt>Onderbouwing</dt>
+                            <dd>ASNO schrijft Nederlands voor (API-04). De energiesector kiest UK-Engels omdat dit beter aansluit bij internationale standaarden zoals IEC CIM en ebIX.</dd>
+                            <dt>Afwijking</dt>
+                            <dd>Interne APIs: keuze aan bedrijf.</dd>
+                        </dl>
+                    </div>
+                </div>
+
+                <div class="richtlijn-card">
+                    <div class="richtlijn-header" onclick="toggleCard(this.parentElement)">
+                        <span class="richtlijn-id">ID 02</span>
+                        <span class="richtlijn-title">Versiebeheer</span>
+                        <span class="richtlijn-tag">Versioning</span>
+                    </div>
+                    <div class="richtlijn-body">
+                        <dl>
+                            <dt>Strategie</dt>
+                            <dd>API's zijn altijd voorzien van een versie.</dd>
+                            <dt>Regels</dt>
+                            <dd>
+                                <ul>
+                                    <li><strong>major:</strong> Niet backward compatible, grote impact voor consumer</li>
+                                    <li><strong>minor:</strong> Wel backward compatible, beperkte impact</li>
+                                    <li><strong>patch:</strong> Wel backward compatible, zonder impact. Mag zonder berichtgeving uitgerold worden.</li>
+                                </ul>
+                            </dd>
+                            <dt>Transitie</dt>
+                            <dd>Voorkeur voor transitiescenario: nieuwe en productieversie worden gedurende een transitieperiode ondersteund. Max 3 versies gelijktijdig in productie.</dd>
+                        </dl>
+                    </div>
+                </div>
+
+                <div class="richtlijn-card">
+                    <div class="richtlijn-header" onclick="toggleCard(this.parentElement)">
+                        <span class="richtlijn-id">ID 03</span>
+                        <span class="richtlijn-title">Query parameter voor sorteren</span>
+                        <span class="richtlijn-tag">Query</span>
+                    </div>
+                    <div class="richtlijn-body">
+                        <dl>
+                            <dt>Strategie</dt>
+                            <dd>Gebruik <code>sort</code> of <code>_sort</code> voor sorteren.</dd>
+                            <dt>Toelichting</dt>
+                            <dd>Conform ASNO API-31.</dd>
+                            <dt>Advies</dt>
+                            <dd>Underscore als prefix (<code>_sort</code>) om botsingen met resource-properties te voorkomen.</dd>
+                        </dl>
+                    </div>
+                </div>
+
+                <div class="richtlijn-card">
+                    <div class="richtlijn-header" onclick="toggleCard(this.parentElement)">
+                        <span class="richtlijn-id">ID 04</span>
+                        <span class="richtlijn-title">Query parameter voor zoeken</span>
+                        <span class="richtlijn-tag">Query</span>
+                    </div>
+                    <div class="richtlijn-body">
+                        <dl>
+                            <dt>Strategie</dt>
+                            <dd>Gebruik <code>search</code> of <code>_search</code> voor full-text zoeken.</dd>
+                            <dt>Toelichting</dt>
+                            <dd>Conform ASNO API-32.</dd>
+                            <dt>Advies</dt>
+                            <dd>Underscore als prefix (<code>_search</code>) om botsingen met resource-properties te voorkomen.</dd>
+                        </dl>
+                    </div>
+                </div>
+
+                <div class="richtlijn-card">
+                    <div class="richtlijn-header" onclick="toggleCard(this.parentElement)">
+                        <span class="richtlijn-id">ID 05</span>
+                        <span class="richtlijn-title">Fouten en uitzonderingssituaties</span>
+                        <span class="richtlijn-tag">Errors</span>
+                    </div>
+                    <div class="richtlijn-body">
+                        <dl>
+                            <dt>Strategie</dt>
+                            <dd>Foutmeldingen conform <strong>RFC 7807</strong> (API-46 in ASNO).</dd>
+                            <dt>Verplichte attributen</dt>
+                            <dd>
+                                <ul>
+                                    <li><code>type</code> - URI referentie naar het type fout</li>
+                                    <li><code>title</code> - generieke titel voor het type fout</li>
+                                    <li><code>status</code> - de HTTP status code</li>
+                                </ul>
+                            </dd>
+                            <dt>Optionele attributen</dt>
+                            <dd>
+                                <ul>
+                                    <li><code>detail</code> - extra gedetailleerde informatie</li>
+                                    <li><code>instance</code> - URI van de aanroep die de fout veroorzaakte</li>
+                                </ul>
+                            </dd>
+                            <dt>Voorbeeld</dt>
+                            <dd><pre class="code-block">{
+  "type": "https://datatracker.ietf.org/doc/html/rfc7231#section-6.5.3",
+  "title": "Forbidden",
+  "status": 403
+}</pre></dd>
+                            <dt>Regels</dt>
+                            <dd>
+                                <ol>
+                                    <li>Foutmelding moet abstract en functioneel geformuleerd zijn</li>
+                                    <li>De foutmelding moet in de payload (body) staan</li>
+                                    <li>Geen technische implementatiedetails (bijv. stacktrace)</li>
+                                </ol>
+                            </dd>
+                        </dl>
+                    </div>
+                </div>
+
+                <div class="richtlijn-card">
+                    <div class="richtlijn-header" onclick="toggleCard(this.parentElement)">
+                        <span class="richtlijn-id">ID 06</span>
+                        <span class="richtlijn-title">Gebruik van ODATA</span>
+                        <span class="richtlijn-tag">Standaard</span>
+                    </div>
+                    <div class="richtlijn-body">
+                        <dl>
+                            <dt>Strategie</dt>
+                            <dd>API's dienen te worden gespecificeerd in OAS. Geen ondersteuning voor ODATA.</dd>
+                            <dt>Toelichting</dt>
+                            <dd>ODATA of WFS als aparte standaard houden, niet dwingen in OAS/API vorm. Voor datasets met complexe query-behoeften kan ODATA een optie zijn.</dd>
+                        </dl>
+                    </div>
+                </div>
+
+                <div class="richtlijn-card">
+                    <div class="richtlijn-header" onclick="toggleCard(this.parentElement)">
+                        <span class="richtlijn-id">ID 07</span>
+                        <span class="richtlijn-title">Definitie attributen Info object</span>
+                        <span class="richtlijn-tag">OAS</span>
+                    </div>
+                    <div class="richtlijn-body">
+                        <dl>
+                            <dt>Strategie</dt>
+                            <dd>Elke API (OpenAPI 3.0+) moet een Info object bevatten.</dd>
+                            <dt>Verplichte attributen</dt>
+                            <dd><pre class="code-block">openapi: 3.0.3
+info:
+  title:
+  description:
+  termsOfService:
+  contact:
+    name:
+    email:
+  license:
+    name:
+    url:
+  version:
+  x-releaseDate:</pre></dd>
+                            <dt>Toelichting</dt>
+                            <dd>
+                                <ul>
+                                    <li><code>version</code> - versienummer als "v" + volledig versienummer (bijv. v2.0.1)</li>
+                                    <li><code>x-releaseDate</code> - datum van vrijgave in ISO 8601 formaat</li>
+                                    <li>Gebruik CommonMark syntax voor <code>description</code></li>
+                                </ul>
+                            </dd>
+                        </dl>
+                    </div>
+                </div>
+
+                <div class="richtlijn-card">
+                    <div class="richtlijn-header" onclick="toggleCard(this.parentElement)">
+                        <span class="richtlijn-id">ID 08</span>
+                        <span class="richtlijn-title">Gebruik van REST operaties</span>
+                        <span class="richtlijn-tag">Methods</span>
+                    </div>
+                    <div class="richtlijn-body">
+                        <dl>
+                            <dt>Strategie</dt>
+                            <dd>POST, GET, PUT, PATCH en DELETE worden gebruikt in de juiste context.</dd>
+                            <dt>Operaties</dt>
+                            <dd>
+                                <ul>
+                                    <li><strong>POST</strong> - create: voegt nieuwe resource toe aan collectie</li>
+                                    <li><strong>GET</strong> - read: resource opvragen, data wordt niet gewijzigd</li>
+                                    <li><strong>PUT</strong> - update/create: volledige resource vervangen</li>
+                                    <li><strong>PATCH</strong> - partial update: gedeeltelijk bijwerken</li>
+                                    <li><strong>DELETE</strong> - delete: specifieke resource verwijderen</li>
+                                </ul>
+                            </dd>
+                            <dt>Afwijking</dt>
+                            <dd>Privacy gevoelige informatie mag niet in de GET URI string. Gebruik POST indien nodig.</dd>
+                        </dl>
+                    </div>
+                </div>
+
+                <div class="richtlijn-card">
+                    <div class="richtlijn-header" onclick="toggleCard(this.parentElement)">
+                        <span class="richtlijn-id">ID 09</span>
+                        <span class="richtlijn-title">Complex search</span>
+                        <span class="richtlijn-tag">Methods</span>
+                    </div>
+                    <div class="richtlijn-body">
+                        <dl>
+                            <dt>Strategie</dt>
+                            <dd>Gebruik POST voor uitgebreide zoekopdrachten (complex search).</dd>
+                            <dt>Toelichting</dt>
+                            <dd>POST met query parameters in de JSON body voor complex search is toegestaan. Dit staat los van geometrische queries (ASNO API-36/API-37).</dd>
+                        </dl>
+                    </div>
+                </div>
+
+                <div class="richtlijn-card">
+                    <div class="richtlijn-header" onclick="toggleCard(this.parentElement)">
+                        <span class="richtlijn-id">ID 10</span>
+                        <span class="richtlijn-title">HTTP status codes</span>
+                        <span class="richtlijn-tag">Status</span>
+                    </div>
+                    <div class="richtlijn-body">
+                        <dl>
+                            <dt>Strategie</dt>
+                            <dd>Minimale set van HTTP status codes per REST operatie.</dd>
+                            <dt>Matrix</dt>
+                            <dd>Zie de <strong>Status Codes</strong> tab voor de volledige matrix per operatie.</dd>
+                            <dt>Regels</dt>
+                            <dd>
+                                <ul>
+                                    <li>400 en 500 zijn generiek en toepasbaar op alle operaties</li>
+                                    <li>422 is strikt voor semantische validatie van de payload</li>
+                                    <li>PUT kan optioneel 201/204 teruggeven bij creatie (Location header verplicht)</li>
+                                    <li>204 is optioneel bij PUT/PATCH update zonder response payload</li>
+                                    <li>200 bij DELETE als response payload met info over verwijderde resource nodig is</li>
+                                </ul>
+                            </dd>
+                        </dl>
+                    </div>
+                </div>
+
+                <div class="richtlijn-card">
+                    <div class="richtlijn-header" onclick="toggleCard(this.parentElement)">
+                        <span class="richtlijn-id">ID 11</span>
+                        <span class="richtlijn-title">Gebruik van JSON Schema Specification</span>
+                        <span class="richtlijn-tag">Validatie</span>
+                    </div>
+                    <div class="richtlijn-body">
+                        <dl>
+                            <dt>Strategie</dt>
+                            <dd>Elke API call met een body <strong>moet</strong> voorzien zijn van een JSON Schema Specification.</dd>
+                            <dt>Onderbouwing</dt>
+                            <dd>
+                                <ul>
+                                    <li>API call kan vroegtijdig in de gateway worden afgewezen bij syntax-fouten</li>
+                                    <li>Voorkomt dat backend-applicaties belast worden met niet-valide calls</li>
+                                    <li>Stelt de API-gebruiker in staat berichten te valideren voor implementatie beschikbaar is</li>
+                                </ul>
+                            </dd>
+                            <dt>Afwijking t.o.v. ASNO</dt>
+                            <dd>ASNO schrijft JSON Schema niet verplicht voor (API-23). De energiesector verplicht dit wel.</dd>
+                        </dl>
+                    </div>
+                </div>
+
+                <div class="richtlijn-card">
+                    <div class="richtlijn-header" onclick="toggleCard(this.parentElement)">
+                        <span class="richtlijn-id">ID 12</span>
+                        <span class="richtlijn-title">Quality of Service specificatie</span>
+                        <span class="richtlijn-tag">QoS</span>
+                    </div>
+                    <div class="richtlijn-body">
+                        <dl>
+                            <dt>Strategie</dt>
+                            <dd>Elke API heeft een Quality of Service specificatie (QoS).</dd>
+                            <dt>Aspecten</dt>
+                            <dd>
+                                <ul>
+                                    <li>Integration latency</li>
+                                    <li>Openingstijden</li>
+                                    <li>Beschikbaarheid</li>
+                                    <li>Capaciteit</li>
+                                    <li>Betrouwbaarheid</li>
+                                </ul>
+                            </dd>
+                            <dt>Toelichting</dt>
+                            <dd>Technische QoS-info in de OAS-specificatie opnemen. Business-relevante info in de servicebeschrijving.</dd>
+                        </dl>
+                    </div>
+                </div>
+
+                <div class="richtlijn-card">
+                    <div class="richtlijn-header" onclick="toggleCard(this.parentElement)">
+                        <span class="richtlijn-id">ID 13</span>
+                        <span class="richtlijn-title">Definiëren van datum/tijd</span>
+                        <span class="richtlijn-tag">Data types</span>
+                    </div>
+                    <div class="richtlijn-body">
+                        <dl>
+                            <dt>Strategie</dt>
+                            <dd>Datum/tijd notatie conform <strong>W3C DTF Note ISO 8601</strong>.</dd>
+                            <dt>Advies</dt>
+                            <dd>
+                                <ul>
+                                    <li>Hanteer UTC met de "Z" als time zone designator</li>
+                                    <li>Specificeer de tijd met seconden en milliseconden</li>
+                                    <li>Indien milliseconden niet bekend zijn, gebruik "000"</li>
+                                </ul>
+                            </dd>
+                            <dt>Voorbeeld</dt>
+                            <dd><code>2020-02-07T14:55:42.000Z</code></dd>
+                        </dl>
+                    </div>
+                </div>
+
+                <div class="richtlijn-card">
+                    <div class="richtlijn-header" onclick="toggleCard(this.parentElement)">
+                        <span class="richtlijn-id">ID 14</span>
+                        <span class="richtlijn-title">Definiëren van een string</span>
+                        <span class="richtlijn-tag">Data types</span>
+                    </div>
+                    <div class="richtlijn-body">
+                        <dl>
+                            <dt>Strategie</dt>
+                            <dd>Strings moeten voorzien zijn van een lengte-attribuut. Minimale lengte moet 1 zijn (0 is niet toegestaan).</dd>
+                            <dt>Opties</dt>
+                            <dd><pre class="code-block">type: string
+minLength: 1
+maxLength: 10
+
+# of
+
+type: string
+length: 10</pre></dd>
+                            <dt>Onderbouwing</dt>
+                            <dd>Voorkomt dat een API call een lege string bevat die tot uitval kan leiden. Advies: definieer in ieder geval de maximale lengte voor strings in responses.</dd>
+                        </dl>
+                    </div>
+                </div>
+
+                <div class="richtlijn-card">
+                    <div class="richtlijn-header" onclick="toggleCard(this.parentElement)">
+                        <span class="richtlijn-id">ID 15</span>
+                        <span class="richtlijn-title">Autorisatie</span>
+                        <span class="richtlijn-tag">Security</span>
+                    </div>
+                    <div class="richtlijn-body">
+                        <dl>
+                            <dt>Strategie</dt>
+                            <dd>Autorisatie met <strong>OAuth 2.0</strong>, bij voorkeur met <strong>OpenID Connect</strong>.</dd>
+                            <dt>Geadviseerde flows</dt>
+                            <dd>
+                                <ul>
+                                    <li><strong>Authorization code flow met PKCE</strong> - wanneer een gebruiker inlogt</li>
+                                    <li><strong>Client credentials grant</strong> - voor applicatie-naar-applicatie autorisatie</li>
+                                </ul>
+                            </dd>
+                            <dt>JWT</dt>
+                            <dd>JWT Access tokens worden geadviseerd voor validatie op Resource server niveau zonder afhankelijkheid van een autorisatie server.</dd>
+                            <dt>Referenties</dt>
+                            <dd>
+                                <ul>
+                                    <li>OAuth2: RFC 6749</li>
+                                    <li>OpenID Connect Core 1.0</li>
+                                    <li>PKCE: RFC 7636</li>
+                                </ul>
+                            </dd>
+                        </dl>
+                    </div>
+                </div>
+
+                <div class="richtlijn-card">
+                    <div class="richtlijn-header" onclick="toggleCard(this.parentElement)">
+                        <span class="richtlijn-id">ID 16</span>
+                        <span class="richtlijn-title">Definiëren van veldnamen</span>
+                        <span class="richtlijn-tag">Naming</span>
+                    </div>
+                    <div class="richtlijn-body">
+                        <dl>
+                            <dt>Strategie</dt>
+                            <dd>Hanteer de definitie van veldnamen zoals het referentie model voorschrijft.</dd>
+                            <dt>Toelichting</dt>
+                            <dd>ASNO schrijft camelCase voor (API-26). Indien het referentie model (IEC CIM, ebIX) een eigen definitie heeft, prevaleert deze boven camelCase.</dd>
+                        </dl>
+                    </div>
+                </div>
+
+                <div class="richtlijn-card">
+                    <div class="richtlijn-header" onclick="toggleCard(this.parentElement)">
+                        <span class="richtlijn-id">ID 17</span>
+                        <span class="richtlijn-title">HAL voor hypermedia controls</span>
+                        <span class="richtlijn-tag">HATEOAS</span>
+                    </div>
+                    <div class="richtlijn-body">
+                        <dl>
+                            <dt>Strategie</dt>
+                            <dd>Gebruik <strong>Hypertext Application Language (HAL)</strong> voor hypermedia controls.</dd>
+                            <dt>Toelichting</dt>
+                            <dd>HAL-representatie voor JSON gebruiken wanneer gerelateerde resources als hyperlinks worden teruggegeven.</dd>
+                            <dt>Voorbeeld</dt>
+                            <dd><pre class="code-block">{
+  "ean": "871688520000000012",
+  "_links": {
+    "self": {
+      "href": "/api/v1/connections/871688520000000012"
+    },
+    "meters": {
+      "href": "/api/v1/connections/871688520000000012/meters"
+    }
+  }
+}</pre></dd>
+                        </dl>
+                    </div>
+                </div>
+
+                <div class="richtlijn-card">
+                    <div class="richtlijn-header" onclick="toggleCard(this.parentElement)">
+                        <span class="richtlijn-id">ID 18</span>
+                        <span class="richtlijn-title">Expanderen van gelinkte resources</span>
+                        <span class="richtlijn-tag">Query</span>
+                    </div>
+                    <div class="richtlijn-body">
+                        <dl>
+                            <dt>Strategie</dt>
+                            <dd>Gebruik query parameter <code>_expand</code> voor het mee laden van gelinkte resources (eager loading).</dd>
+                            <dt>Voorbeeld</dt>
+                            <dd><code>GET /api/v1/connections/123?_expand=meters</code></dd>
+                        </dl>
+                    </div>
+                </div>
+
+                <div class="richtlijn-card">
+                    <div class="richtlijn-header" onclick="toggleCard(this.parentElement)">
+                        <span class="richtlijn-id">ID 19</span>
+                        <span class="richtlijn-title">Representatie op maat</span>
+                        <span class="richtlijn-tag">Query</span>
+                    </div>
+                    <div class="richtlijn-body">
+                        <dl>
+                            <dt>Strategie</dt>
+                            <dd>Gebruik query parameter <code>_fields</code> om individuele velden te selecteren.</dd>
+                            <dt>Voordelen</dt>
+                            <dd>
+                                <ul>
+                                    <li>Beperkt netwerkverkeer (relevant voor lichtgewicht toepassingen)</li>
+                                    <li>Vereenvoudigt gebruik van de API</li>
+                                    <li>Maakt de uitvoer aanpasbaar (op maat)</li>
+                                </ul>
+                            </dd>
+                            <dt>Voorbeeld</dt>
+                            <dd><code>GET /api/v1/connections/123?_fields=ean,connectionType</code></dd>
+                        </dl>
+                    </div>
+                </div>
+
+                <div class="richtlijn-card">
+                    <div class="richtlijn-header" onclick="toggleCard(this.parentElement)">
+                        <span class="richtlijn-id">ID 20</span>
+                        <span class="richtlijn-title">HTTP headers</span>
+                        <span class="richtlijn-tag">Headers</span>
+                    </div>
+                    <div class="richtlijn-body">
+                        <dl>
+                            <dt>Strategie</dt>
+                            <dd>HTTP headers voor beveiliging en metadata. Cardinaliteit is context-afhankelijk.</dd>
+                            <dt>Extensie headers</dt>
+                            <dd>
+                                <table>
+                                    <thead><tr><th>Header</th><th>Type</th><th>Beschrijving</th></tr></thead>
+                                    <tbody>
+                                        <tr><td><code>X-Object-ID</code></td><td>Response</td><td>Alternatief voor Location header (ID van gecreeerde resource)</td></tr>
+                                        <tr><td><code>X-Correlation-ID</code></td><td>Req &amp; Resp</td><td>Unieke ID voor koppeling van berichten in een transactie</td></tr>
+                                        <tr><td><code>X-Request-ID</code></td><td>Request</td><td>Unieke identificatie van het request</td></tr>
+                                        <tr><td><code>X-Sender-ID</code></td><td>Request</td><td>EAN13 van de aanroepende marktpartij</td></tr>
+                                        <tr><td><code>X-Role</code></td><td>Request</td><td>Rol van de marktpartij (bij X-Sender-ID)</td></tr>
+                                        <tr><td><code>X-Principal-Token</code></td><td>Request</td><td>Unieke identificatie van aanroepende partij (bijv. OAuth access token)</td></tr>
+                                    </tbody>
+                                </table>
+                            </dd>
+                        </dl>
+                    </div>
+                </div>
+
+                <div class="richtlijn-card">
+                    <div class="richtlijn-header" onclick="toggleCard(this.parentElement)">
+                        <span class="richtlijn-id">ID 21</span>
+                        <span class="richtlijn-title">Enumeraties</span>
+                        <span class="richtlijn-tag">Data types</span>
+                    </div>
+                    <div class="richtlijn-body">
+                        <dl>
+                            <dt>Strategie</dt>
+                            <dd>Enumeraties zijn onder voorwaarden toegestaan voor opzichzelfstaande REST API's.</dd>
+                            <dt>Regels</dt>
+                            <dd>
+                                <ul>
+                                    <li>Enumeraties gebaseerd op internationale standaarden: volg die notatie</li>
+                                    <li>Overige enumeraties: <strong>UPPER_SNAKE_CASE</strong> (conform API-66 ASNO)</li>
+                                    <li>Dynamische reeks: kan wijzigen door regelgeving of business requirements</li>
+                                    <li>Statische reeks: wijzigt niet meer (bijv. dagen van de week)</li>
+                                </ul>
+                            </dd>
+                            <dt>Niet toegestaan</dt>
+                            <dd>Enumeraties in REST API's die onderdeel zijn van een <strong>ketenproces</strong>, omdat wijzigingen impact hebben op de gehele informatie-uitwisseling.</dd>
+                        </dl>
+                    </div>
+                </div>
+
+                <div class="richtlijn-card">
+                    <div class="richtlijn-header" onclick="toggleCard(this.parentElement)">
+                        <span class="richtlijn-id">ID 22</span>
+                        <span class="richtlijn-title">Persoonsgegevens in de URL</span>
+                        <span class="richtlijn-tag">Privacy</span>
+                    </div>
+                    <div class="richtlijn-body">
+                        <dl>
+                            <dt>Strategie</dt>
+                            <dd>Gewone persoonsgegevens mogen in de URL, mits aan voorwaarden voldaan.</dd>
+                            <dt>Voorwaarden</dt>
+                            <dd>
+                                <ul>
+                                    <li>Volledige bericht (body en URL) wordt versleuteld tijdens versturen</li>
+                                    <li>Gegevens alleen inzichtelijk bij API Consumer, Gateway en Provider</li>
+                                    <li>Gebruik alleen als noodzakelijk voor uitvoering van taken</li>
+                                    <li>Geen gevoelige of bijzondere persoonsgegevens afleidbaar uit URL</li>
+                                </ul>
+                            </dd>
+                            <dt>Toegestane identificerende gegevens</dt>
+                            <dd>BAG, EAN-code, klantnummer, meternummer, postcode+huisnummer</dd>
+                            <dt>Nooit in URL</dt>
+                            <dd>BSN-nummer, gezondheidsgegevens, financiele gegevens, verbruiksgegevens, strafrechtelijke gegevens, en andere bijzondere persoonsgegevens.</dd>
+                            <dt>Belangrijk</dt>
+                            <dd><strong>Combineren van meerdere gewone persoonsgegevens in de URL is niet toegestaan!</strong></dd>
+                        </dl>
+                    </div>
+                </div>
+
+                <div class="richtlijn-card">
+                    <div class="richtlijn-header" onclick="toggleCard(this.parentElement)">
+                        <span class="richtlijn-id">ID 23</span>
+                        <span class="richtlijn-title">API specificatie</span>
+                        <span class="richtlijn-tag">OAS</span>
+                    </div>
+                    <div class="richtlijn-body">
+                        <dl>
+                            <dt>Strategie</dt>
+                            <dd>API's in <strong>OpenAPI Specificatie v3+</strong> (OAS v3). Uitsluitend <strong>JSON-formaat</strong>. YAML wordt niet ondersteund.</dd>
+                            <dt>Onderbouwing</dt>
+                            <dd>Eenduidig specificatieformaat leidt tot voorspelbaarheid, verbeterde interoperabiliteit en hogere developer experience.</dd>
+                        </dl>
+                    </div>
+                </div>
+
+                <div class="richtlijn-card">
+                    <div class="richtlijn-header" onclick="toggleCard(this.parentElement)">
+                        <span class="richtlijn-id">ID 24</span>
+                        <span class="richtlijn-title">Gebruik van xxxOf constructies</span>
+                        <span class="richtlijn-tag">OAS</span>
+                    </div>
+                    <div class="richtlijn-body">
+                        <dl>
+                            <dt>Strategie</dt>
+                            <dd>Het gebruik van <code>allOf</code>, <code>anyOf</code> en <code>oneOf</code> constructies moet worden <strong>vermeden</strong>.</dd>
+                            <dt>Onderbouwing</dt>
+                            <dd>Diverse code generatoren en applicaties gaan niet goed om met deze constructies en genereren foutieve code en importeerfouten.</dd>
+                            <dt>Toekomst</dt>
+                            <dd>Indien tooling dit in de toekomst beter ondersteunt, kan het bij een eerstvolgende breaking change worden heroverwogen na marktconsultatie.</dd>
+                        </dl>
+                    </div>
+                </div>
+
+                <div class="richtlijn-card">
+                    <div class="richtlijn-header" onclick="toggleCard(this.parentElement)">
+                        <span class="richtlijn-id">ID 25</span>
+                        <span class="richtlijn-title">Conditionele toegang tot RESTful domein APIs</span>
+                        <span class="richtlijn-tag">Security</span>
+                    </div>
+                    <div class="richtlijn-body">
+                        <dl>
+                            <dt>Strategie</dt>
+                            <dd>
+                                <ol>
+                                    <li>Kies een praktische taxonomie op basis van de RESTful API scope</li>
+                                    <li>Splits resources in separate <strong>value objects</strong>. Maak optioneel als niet alle afnemers er recht op hebben</li>
+                                    <li>Maak attributen buiten value objects <strong>optioneel</strong> als ze rol-afhankelijk zijn</li>
+                                </ol>
+                            </dd>
+                            <dt>Uitgangspunten</dt>
+                            <dd>
+                                <ul>
+                                    <li>Elke resource wordt uniek geadresseerd door precies een endpoint</li>
+                                    <li>Rollen van de afnemer zijn leidend voor terug te geven informatie</li>
+                                    <li>Afnemer krijgt altijd de maximale informatie die past bij zijn permissies</li>
+                                    <li>Scope is een enkel domein; geen informatie uit andere domeinen</li>
+                                    <li>Subresources hebben altijd een eigen endpoint binnen de parent context</li>
+                                    <li>Value objects zijn groepjes attributen met semantische betekenis maar zonder eigen identiteit</li>
+                                </ul>
+                            </dd>
+                        </dl>
+                    </div>
+                </div>
             </div>
         </section>
 

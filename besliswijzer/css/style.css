@@ -964,6 +964,164 @@ footer strong { color: var(--text); }
 }
 
 /* ==========================================================================
+   RICHTLIJNEN
+   ========================================================================== */
+
+.richtlijnen-section {
+    margin-bottom: 32px;
+}
+
+.richtlijnen-section > h3 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--border);
+}
+
+.richtlijn-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    margin-bottom: 8px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+}
+
+.richtlijn-card:hover {
+    border-color: var(--accent);
+}
+
+.richtlijn-card.open {
+    border-color: var(--accent);
+}
+
+.richtlijn-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.richtlijn-header::after {
+    content: '+';
+    margin-left: auto;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+    transition: transform 0.2s;
+}
+
+.richtlijn-card.open .richtlijn-header::after {
+    content: '\2212';
+}
+
+.richtlijn-id {
+    display: inline-block;
+    background: var(--accent);
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-family: var(--font-mono);
+    white-space: nowrap;
+}
+
+.richtlijn-title {
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 0.95rem;
+}
+
+.richtlijn-tag {
+    display: inline-block;
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+}
+
+.richtlijn-body {
+    display: none;
+    padding: 0 16px 16px;
+    border-top: 1px solid var(--border);
+}
+
+.richtlijn-card.open .richtlijn-body {
+    display: block;
+}
+
+.richtlijn-body dl {
+    margin: 0;
+}
+
+.richtlijn-body dt {
+    font-weight: 700;
+    color: var(--accent);
+    font-size: 0.85rem;
+    margin-top: 12px;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.richtlijn-body dt:first-child {
+    margin-top: 16px;
+}
+
+.richtlijn-body dd {
+    margin: 0 0 4px 0;
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+
+.richtlijn-body ul,
+.richtlijn-body ol {
+    margin: 4px 0 4px 20px;
+    padding: 0;
+}
+
+.richtlijn-body li {
+    margin-bottom: 4px;
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.richtlijn-body table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 8px 0;
+    font-size: 0.85rem;
+}
+
+.richtlijn-body th,
+.richtlijn-body td {
+    padding: 6px 10px;
+    border: 1px solid var(--border);
+    text-align: left;
+}
+
+.richtlijn-body th {
+    background: var(--bg-secondary);
+    font-weight: 600;
+}
+
+.richtlijn-body .code-block {
+    margin: 8px 0;
+    font-size: 0.8rem;
+}
+
+/* ==========================================================================
    RESPONSIVE
    ========================================================================== */
 
